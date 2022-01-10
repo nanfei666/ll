@@ -45,31 +45,36 @@ class My_xlwt(object):
             else:
                 self.write(start_row,start_col+col,label)
 
-def main(txt_file,excel_name):
+def main(txt_file,excel_name,times=0):
     with open (txt_file,'r') as f:
         result=[]
+        floatAr=[]
+        count = 0
         for i,line in enumerate(f.readlines()):
+            
             reg=r'\s-?[1-9]+[0-9]*.?[0-9]*E-?\+?[0-9]+\s?'
 
             target = re.findall(reg,line.strip())
             floatAr  = [x for x in target]
+
             if floatAr:
                 result.append(floatAr)
+                count+=1
+                if times!=0:
+                    if count!=0 and count%times==0:
+                        result.append([])
+                        count=0
 
         test = My_xlwt(name=excel_name)
-        j=0
+
         for i in range(len(result)):
             # 在0行0列写入一行数据
-            j+=1
-            if j%14==0:
-                test.write_row(i,0,[])
-                j=0
-            else:
-                test.write_row(i,0,result[i])
-            
+            test.write_row(i,0,result[i])
+
             # 保存文件
         test.save()
 
 txt_file='only_push_No9_lonGMI.txt'
 excel_name = 'my_test.xls'
-main(txt_file,excel_name)
+
+main(txt_file,excel_name,times=13)
